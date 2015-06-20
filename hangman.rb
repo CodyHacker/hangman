@@ -1,21 +1,46 @@
-
+require 'yaml'
 class Hangman 
   def initialize(file='5desk.txt')
     @file = file
     @word_to_guess = get_random_word_from_file(@file)
+    @misses = ''
+    @word = ''
+    @word_to_guess.length.times {@word << '-'}
+
     play_game
   end
 
   private
 
-  def quit_and_or_save
-    puts "We're gonna save current state of secret word to guess: #{@word_to_guess}, the guess: #{@word}, misses: #{@misses}"
+  def save_game
+    data = [@word_to_guess, @word, @misses]
+    filename = rand(10000).to_s
+
+    while File.exist?(filename)
+      filename = rand(10000).to_s
+    end
+
+    filename = "hangman#{filename}.yaml"
+
+    File.open(filename, "w"){ |somefile| somefile.puts YAML.dump(data)}
+
+    puts "File #{filename} created"
+
     exit
+  end
+
+  def quit_and_or_save
+    print 'Do you want to save the current game (y/n)? '
+    if get_character == 'Y'
+      save_game
+    else
+      exit
+    end
   end
 
   def get_random_word_from_file(word_file)
     # Loads the file and returns a random word betwee 5 and 12 characters
-    unless File.exists?(word_file)
+    unless File.exist?(word_file)
       puts "The file: #{word_file} does not exist!"
       exit
     end
@@ -44,9 +69,6 @@ class Hangman
   end
 
   def play_game
-    @misses = ''
-    @word = ''
-    @word_to_guess.length.times {@word << '-'}
     loop do
       puts "Debugging only ---> #{@word_to_guess}  <--- Debugging only" if $VERBOSE
 
