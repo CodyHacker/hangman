@@ -8,6 +8,11 @@ class Hangman
 
   private
 
+  def quit_and_or_save
+    puts "We're gonna save current state of secret word to guess: #{@word_to_guess}, the guess: #{@word}, misses: #{@misses}"
+    exit
+  end
+
   def get_random_word_from_file(word_file)
     # Loads the file and returns a random word betwee 5 and 12 characters
     unless File.exists?(word_file)
@@ -43,9 +48,9 @@ class Hangman
     @word = ''
     @word_to_guess.length.times {@word << '-'}
     loop do
-      puts "Debugging only ---> #{@word_to_guess}  <--- Debugging only"
+      puts "Debugging only ---> #{@word_to_guess}  <--- Debugging only" if $VERBOSE
 
-      puts "Word: #{@word}     misses: #{@misses}"
+      puts "Word: #{@word}     misses (6 allowed): #{@misses}"
       if @word == @word_to_guess.upcase 
         puts "You win! You correctly guessed that the word is #{@word_to_guess.upcase}"
         exit
@@ -56,16 +61,19 @@ class Hangman
       end
       print "Guess: "
       guess_char = get_character
-      exit if guess_char == '1'
-      if @word_to_guess.upcase.include?(guess_char)
+      if guess_char == '1'
+        print 'Are you sure you want to quit? (y/n)? '
+        if get_character == 'Y'
+          quit_and_or_save
+        else
+          next
+        end
+      elsif @word_to_guess.upcase.include?(guess_char)
         # return array of all index positions of guess_char wihtin @word_to_guess
-        a = (0 ... @word_to_guess.length).find_all { |i| @word_to_guess.upcase[i,1] == guess_char }
-        a.each { |index| @word[index] = guess_char}
+        (0 ... @word_to_guess.length).find_all { |i| @word_to_guess.upcase[i,1] == guess_char }.each { |index| @word[index] = guess_char}
       else
         @misses << guess_char + ' ' unless @misses.include?(guess_char)
       end
-      # puts "Word: #{@word}     Misses: #{@misses}"
-      # puts guess_char
     end
   end
 
