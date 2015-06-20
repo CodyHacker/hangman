@@ -9,6 +9,7 @@ class Hangman
   private
 
   def get_random_word_from_file(word_file)
+    # Loads the file and returns a random word betwee 5 and 12 characters
     unless File.exists?(word_file)
       puts "The file: #{word_file} does not exist!"
       exit
@@ -23,6 +24,7 @@ class Hangman
 
 
   def get_character
+    # gets a character from the keyboard without pressing return
     character = ''
     until character.match(/^[[:alpha:]]$/) || character == '1'
       begin
@@ -44,7 +46,14 @@ class Hangman
       puts "Debugging only ---> #{@word_to_guess}  <--- Debugging only"
 
       puts "Word: #{@word}     misses: #{@misses}"
-      exit if @word == @word_to_guess.upcase 
+      if @word == @word_to_guess.upcase 
+        puts "You win! You correctly guessed that the word is #{@word_to_guess.upcase}"
+        exit
+      elsif @misses.length >= 12
+        puts 'You lose!'
+        puts "The word was #{@word_to_guess.upcase}"
+        exit
+      end
       print "Guess: "
       guess_char = get_character
       exit if guess_char == '1'
