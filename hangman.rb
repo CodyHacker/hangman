@@ -42,13 +42,14 @@ class Hangman
 
   def save_game
     data = [@word_to_guess, @word, @misses]
-    filename = Time.now.to_s
+    filename = Time.now.to_s[0...-6]
     while File.exist?(filename)
       filename = Time.now.to_s
     end
     filename = "hangman#{filename}.yaml"
     Dir.mkdir("games") unless Dir.exist?("games")
     File.open("games/#{filename}", "w"){ |somefile| somefile.puts YAML.dump(data)}
+    puts
     puts "File games/#{filename} created"
     exit
   end
@@ -76,6 +77,30 @@ class Hangman
     random_word
   end
 
+  def build_hangman(part)
+    case part
+    when 2
+      puts 'O'.rjust(75)
+    when 4
+      puts 'O'.rjust(75)
+      puts '|'.rjust(75)
+    when 6
+      puts 'O'.rjust(75)
+      puts "\\|".rjust(75)
+    when 8
+      puts 'O'.rjust(75)
+      puts "\\|/".rjust(76)
+    when 10
+      puts 'O'.rjust(75)
+      puts "\\|/".rjust(76)
+      puts "/".rjust(74)
+    when 12
+      puts 'O'.rjust(75)
+      puts "\\|/".rjust(76)
+      puts "/ \\".rjust(76)
+    else
+    end
+  end
 
   def get_character
     # gets a character from the keyboard without pressing return
@@ -95,6 +120,7 @@ class Hangman
   def play_game
     loop do
       puts "Debugging only ---> #{@word_to_guess}  <--- Debugging only" if $VERBOSE
+      build_hangman(@misses.length) 
 
       puts "Word: #{@word}     misses (6 allowed): #{@misses}"
       if @word == @word_to_guess.upcase 
