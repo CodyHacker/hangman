@@ -33,11 +33,7 @@ class Hangman
 
   def play_saved_game?
     print 'Do you want to play a saved game? (y/n)? '
-    if get_character == 'Y'
-      true
-    else
-      false
-    end
+    get_character == 'Y' ? true : false
   end
 
   def save_game
@@ -51,7 +47,7 @@ class Hangman
     File.open("games/#{filename}", "w"){ |somefile| somefile.puts YAML.dump(data)}
     puts
     puts "File games/#{filename} created"
-    exit
+    puts
   end
 
   def quit_and_or_save
@@ -131,7 +127,7 @@ class Hangman
         puts "The word was #{@word_to_guess.upcase}"
         exit
       end
-      print "Guess: "
+      print "Guess (1 to quit): "
       guess_char = get_character
       if guess_char == '1'
         print 'Are you sure you want to quit? (y/n)? '
