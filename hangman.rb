@@ -1,31 +1,52 @@
 require 'yaml'
 class Hangman 
   def initialize(file='5desk.txt')
-    @file = file
-    @word_to_guess = get_random_word_from_file(@file)
-    @misses = ''
-    @word = ''
-    @word_to_guess.length.times {@word << '-'}
-
+    if play_saved_game?
+      load_saved_game
+    else
+      @file = file
+      @word_to_guess = get_random_word_from_file(@file)
+      @misses = ''
+      @word = ''
+      @word_to_guess.length.times {@word << '-'}
+    end
     play_game
   end
 
   private
 
+  def load_saved_game
+    the_files = Dir.glob('*.yaml')
+    the_files.each_with_index {|fname, index| puts "#{(index + 65).chr} -- #{fname}"}
+    print 'Enter letter of game you wish to load: '
+    chosen_file_letter = get_character
+     # until @chosen_file_letter.ord-65 < @the_files.size
+    file_to_load = the_files[chosen_file_letter.ord-65]
+     # end
+    data = YAML.load(File.open(file_to_load, "r"){ |file| file.read })
+    @word_to_guess = data[0]
+    @word = data[1]
+    @misses = data[2]
+  end
+
+  def play_saved_game?
+    print 'Do you want to play a saved game? (y/n)? '
+    if get_character == 'Y'
+      true
+    else
+      false
+    end
+  end
+
   def save_game
     data = [@word_to_guess, @word, @misses]
     filename = rand(10000).to_s
-
     while File.exist?(filename)
       filename = rand(10000).to_s
     end
-
     filename = "hangman#{filename}.yaml"
-
     File.open(filename, "w"){ |somefile| somefile.puts YAML.dump(data)}
-
     puts "File #{filename} created"
-
     exit
   end
 
